@@ -270,29 +270,37 @@ def update():
         zombie.position += direction * time.dt * 1.2
         zombie.look_at(player)
 
-        # zombie collision
-        if distance(player.position, zombie.position) < 2:
-            health -= 20 * time.dt
+    # zombie collision
+    if distance(player.position, zombie.position) < 2:
+        health -= 20 * time.dt
             
-            if health < 0:
-                health = 0
+        if health < 0:
+            health = 0
                 
             health_text.text = f"Health : {int(health)}"
 
-    # medicine collision
+    # med collision
     for med in meds:
         if med.enabled and distance(player.position, med.position) < 1.5:
             med.disable()
+
             score += 1
             score_text.text = f"Score : {score}"
+        
+            health += 25
+            if health > 150:
+                health = 150
+
+            health_text.text = f"Health : {health}/150"
 
     # win condition
     all_collected = True
     for med in meds:
         if med.enabled:
             all_collected = False
+            break
 
-    if all_collected and not game_over:
+    if ((all_collected and health >= 80) or health >= 150) and not game_over:
         game_over = True
         mouse.locked = False
         
