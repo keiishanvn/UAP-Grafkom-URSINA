@@ -12,6 +12,7 @@ window.fps_counter.enabled = True
 
 # sky
 Sky(color=color.black)
+
 # lighting
 DirectionalLight(
     shadows=True,
@@ -26,10 +27,10 @@ AmbientLight(
 # ground
 ground = Entity(
     model ='plane',
-    scale = 120,
+    scale = (120,1,120),
     texture ='grass',
-    texture_scale =(60,60),
-    color =color.rgb(35, 35, 35),
+    texture_scale = (60,60),
+    color = color.rgb(35, 35, 35),
     collider ='box'
 )
 
@@ -39,7 +40,7 @@ player = FirstPersonController(
 )
 
 player.speed = 5
-player.jump_height = 3
+player.jump_height = 5
 player.gravity = 0.5
 camera.fov = 90
 
@@ -73,58 +74,47 @@ Entity(
 )
 
 # trees
-for i in range(30):
+for i in range(1):
     x = random.randint(-50,50)
     z = random.randint(-50,50)
     
     Entity(
-        model='cube',
-        color=color.red,
-        unlit=True,
-        scale=(1.2, 5, 1.2),
-        position=(x,2,z)
-    )
-
-    Entity(
-        model='sphere',
-        color=color.rgb(0,100,0),
-        scale=4,
-        position=(x,6,z)
+        model='tree2.glb',
+        scale=3,
+        position=(0,3.5,0)
     )
 
 # zombies
 zombies = []
-for i in range(5):
+for i in range(10):
     zombie = Entity(
-        model='cube',
-        color=color.lime,
-        scale=(2,3,2),
+        model='zombie2.glb',
+        scale=1.5,
         position=(
             random.randint(-30,30),
-            1,
+            1.5,
             random.randint(-30,30)
         ),
-        collider='box'
+        rotation_y=-180
     )
 
     zombies.append(zombie)
 
-# coins
-coins = []
+# medicine
+meds = []
 for i in range(10):
-    coin = Entity(
-        model='sphere',
-        color=color.yellow,
-        scale=.5,
+    med = Entity(
+        model='med.obj',
+        color=color.red,
+        scale=0.02,
         position=(
             random.randint(-40,40),
             1,
             random.randint(-40,40)
-        ),
-        collider='box'
+        )
     )
-
-    coins.append(coin)
+    
+    meds.append(med)
 
 # ui
 score = 0
@@ -219,9 +209,14 @@ def reset_game():
             random.randint(-30,30)
         )
 
-    # reset coins
-    for coin in coins:
-        coin.enable()
+    # reset medicine
+    for med in meds:
+        med.enable()
+        med.position = (      
+        random.randint(-30, 30),
+        1,
+        random.randint(-30, 30)
+        )
 
     # hapus UI game over
     if game_over_text:
@@ -284,17 +279,17 @@ def update():
                 
             health_text.text = f"Health : {int(health)}"
 
-    # coin collision
-    for coin in coins:
-        if coin.enabled and distance(player.position, coin.position) < 1.5:
-            coin.disable()
+    # medicine collision
+    for med in meds:
+        if med.enabled and distance(player.position, med.position) < 1.5:
+            med.disable()
             score += 1
             score_text.text = f"Score : {score}"
 
     # win condition
     all_collected = True
-    for coin in coins:
-        if coin.enabled:
+    for med in meds:
+        if med.enabled:
             all_collected = False
 
     if all_collected and not game_over:
