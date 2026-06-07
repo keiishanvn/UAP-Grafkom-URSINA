@@ -26,12 +26,12 @@ AmbientLight(
 
 # ground
 ground = Entity(
-    model ='plane',
-    scale = (120,1,120),
-    texture ='grass',
-    texture_scale = (60,60),
-    color = color.rgb(35, 35, 35),
-    collider ='box'
+    model='plane',
+    scale=(120,1,120),
+    texture='grass',
+    texture_scale=(60,60),
+    color=color.rgb(35, 35, 35),
+    collider='box'
 )
 
 # player
@@ -39,51 +39,22 @@ player = FirstPersonController(
     position=(0,2,0)
 )
 
-player.speed = 5
-player.jump_height = 5
+player.speed = 7
+player.jump_height = 3
 player.gravity = 0.5
 camera.fov = 90
 
-# walls
-wall_height = 5
-wall_thickness = 1
-ground_size = 120
-
-Entity(
-    mode = 'cube',
-    position = (0, wall_height/2, ground_size/2),
-    scale = (ground_size, wall_height, wall_thickness),
-    collider = 'box',
-    visible = False
-)
-
-Entity(
-    mode = 'cube',
-    position = (0, wall_height/2, -ground_size/2),
-    scale = (ground_size, wall_height, wall_thickness),
-    collider = 'box',
-    visible = False
-)
-
-Entity(
-    mode = 'cube',
-    position = (-ground_size/2, wall_height/2),
-    scale = (wall_thickness, wall_height, ground_size),
-    collider = 'box',
-    visible = False
-)
-
 # trees
 for i in range(1):
-    x = random.randint(-50,50)
-    z = random.randint(-50,50)
+    x = random.randint(-40,40)
+    z = random.randint(-40,40)
     
     Entity(
         model='tree2.glb',
         scale=3,
-        position=(0,3.5,0)
+        position=(0,3,0)
     )
-
+    
 # zombies
 zombies = []
 for i in range(10):
@@ -126,13 +97,13 @@ restart_text = None
 win_text = None
 
 score_text = Text(
-    text=f"Score : {score}",
+    text=f"Score : {score}/10",
     position=(-0.85,0.45),
     scale=2
 )
 
 health_text = Text(
-    text=f"Health : {health}",
+    text=f"Health : {health}/150",
     position=(-0.85,0.40),
     scale=2
 )
@@ -193,8 +164,8 @@ def reset_game():
     health = 100
     game_over = False
 
-    score_text.text = f"Score : {score}"
-    health_text.text = f"Health : {health}"
+    score_text.text = f"Score : {score}/10"
+    health_text.text = f"Health : {health}/150"
 
     # reset player
     player.position = (0,2,0)
@@ -209,7 +180,7 @@ def reset_game():
             random.randint(-30,30)
         )
 
-    # reset medicine
+    # reset meds
     for med in meds:
         med.enable()
         med.position = (      
@@ -267,17 +238,17 @@ def update():
     # zombie movement
     for zombie in zombies:
         direction = (player.position - zombie.position).normalized()
-        zombie.position += direction * time.dt * 1.2
+        zombie.position += direction * time.dt * 3.5
         zombie.look_at(player)
 
-    # zombie collision
-    if distance(player.position, zombie.position) < 2:
-        health -= 20 * time.dt
+        # zombie collision
+        if distance(player.position, zombie.position) < 2:
+            health -= 20 * time.dt
             
-        if health < 0:
-            health = 0
+            if health < 0:
+                health = 0
                 
-            health_text.text = f"Health : {int(health)}"
+            health_text.text = f"Health : {int(health)}/150"
 
     # med collision
     for med in meds:
@@ -285,7 +256,7 @@ def update():
             med.disable()
 
             score += 1
-            score_text.text = f"Score : {score}"
+            score_text.text = f"Score : {score}/10"
         
             health += 25
             if health > 150:
